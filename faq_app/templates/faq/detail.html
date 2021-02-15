@@ -1,0 +1,46 @@
+<div>
+	<h3><b>{{ object.user.username }}</b></h3>
+	<h1>{{ object.title }}</h1>
+	<p>{{ object.body }}</p>
+	<p><i>{{ object.pub_date }}</i></p>
+</div>
+
+<div>
+	{% for a in object.answer_set.all %}
+		<div>
+			<h3>{{ a.user.username }}</h3>
+			<p>{{ a.body }}</p>
+			<p>{{ a.likes }} likes</p>
+			<p>{{ a.dislikes }} dislikes</p>
+			<p><b>{{ a.best_answer }}</b></p>
+			<p><i>{{ a.pub_date }}</i></p>
+			{% if object.user == user %}
+				<form action="/answers/{{ a.id }}/best" method="post">
+					{% csrf_token %}
+					<input type="hidden" name="answer" value="{{ a.pk }}">
+					<input type="submit" value="Best">
+				</form>
+			{% endif %}
+			<form action="/answers/{{ a.id }}/liked" method="post">
+				{% csrf_token %}
+				<input type="hidden" name="answer" value="{{ a.pk }}">
+				<input type="submit" value="Like">
+			</form>
+			<form action="/answers/{{ a.id }}/disliked" method="post">
+				{% csrf_token %}
+				<input type="hidden" name="answer" value="{{ a.pk }}">
+				<input type="submit" value="Dislike">
+			</form>
+		</div>
+	{% endfor %}
+</div>
+
+<div>
+	<h3>Leave an answer:</h3>
+	<form method="post" action="/answers/create">
+		{% csrf_token %}
+		{{ form.as_p|safe }}
+		<input type="hidden" name="question" value="{{ object.pk }}">
+		<input type="submit" value="Create answer">
+	</form>
+</div>
